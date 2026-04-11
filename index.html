@@ -1,0 +1,453 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Zzet_a3D | Tienda 3D</title>
+  <meta name="description" content="Tienda de impresión 3D con catálogo, carrito, WhatsApp y Mercado Pago." />
+  <style>
+    :root {
+      --bg:#0b1020; --panel:#121933; --panel2:#182247; --line:rgba(255,255,255,.08);
+      --text:#f7f8ff; --muted:#b5bddf; --primary:#6fe7ff; --secondary:#8aa1ff; --accent:#ff7bd5;
+      --max:1180px;
+    }
+    * { box-sizing:border-box; }
+    body {
+      margin:0; font-family:Inter,Arial,sans-serif; color:var(--text);
+      background:linear-gradient(180deg,#070b18,#0b1020 45%,#0d1430);
+    }
+    a { color:inherit; text-decoration:none; }
+    img { display:block; max-width:100%; }
+    .container { width:min(var(--max), calc(100% - 24px)); margin:0 auto; }
+    .nav {
+      position:sticky; top:0; z-index:50; background:rgba(9,13,26,.92);
+      backdrop-filter:blur(10px); border-bottom:1px solid var(--line);
+    }
+    .nav-inner {
+      display:flex; justify-content:space-between; align-items:center; gap:16px; padding:14px 0;
+      flex-wrap:wrap;
+    }
+    .brand { font-weight:900; letter-spacing:.4px; }
+    .nav-links { display:flex; gap:14px; flex-wrap:wrap; color:var(--muted); font-size:.95rem; }
+    .cart-pill {
+      padding:10px 14px; border-radius:999px; background:rgba(255,255,255,.04);
+      border:1px solid var(--line); font-weight:800;
+    }
+    .hero { padding:44px 0 24px; }
+    .hero-box {
+      background:linear-gradient(180deg, rgba(24,34,71,.95), rgba(18,25,51,.95));
+      border:1px solid var(--line); border-radius:24px; padding:30px;
+      display:grid; grid-template-columns:1.15fr .85fr; gap:24px; align-items:center;
+    }
+    h1 { margin:0 0 12px; font-size:clamp(2rem,5vw,4.3rem); line-height:.95; letter-spacing:-.05em; }
+    .gradient {
+      background:linear-gradient(90deg,var(--primary),var(--secondary),var(--accent));
+      -webkit-background-clip:text; background-clip:text; color:transparent;
+    }
+    .lead { color:var(--muted); line-height:1.7; margin:0; }
+    .actions { display:flex; gap:12px; flex-wrap:wrap; margin-top:18px; }
+    .btn {
+      display:inline-flex; align-items:center; justify-content:center; min-height:46px;
+      padding:12px 18px; border-radius:14px; font-weight:800; border:1px solid var(--line);
+      background:rgba(255,255,255,.03); color:var(--text); cursor:pointer;
+    }
+    .btn.primary {
+      background:linear-gradient(90deg,var(--primary),var(--secondary),var(--accent));
+      color:#08101f; border:none;
+    }
+    .hero-card,.panel {
+      background:linear-gradient(180deg, rgba(24,34,71,.95), rgba(18,25,51,.95));
+      border:1px solid var(--line); border-radius:20px; padding:22px;
+    }
+    .list { display:grid; gap:10px; color:var(--muted); }
+    .stats { display:grid; grid-template-columns:repeat(4,1fr); gap:14px; margin-top:16px; }
+    .stat {
+      background:rgba(255,255,255,.03); border:1px solid var(--line);
+      border-radius:18px; padding:16px;
+    }
+    .stat b { font-size:1.5rem; display:block; margin-bottom:6px; }
+    section { padding:24px 0; }
+    .section-head h2 { margin:0 0 8px; font-size:2rem; }
+    .section-head p { margin:0; color:var(--muted); line-height:1.7; }
+    .toolbar {
+      display:grid; grid-template-columns:1fr .7fr .6fr; gap:12px; margin:18px 0;
+    }
+    .input,.select,.textarea {
+      width:100%; padding:14px 15px; border-radius:14px; border:1px solid var(--line);
+      background:rgba(255,255,255,.04); color:var(--text); font:inherit;
+    }
+    .textarea { min-height:120px; resize:vertical; }
+    .catalog { display:grid; grid-template-columns:repeat(4,1fr); gap:16px; }
+    .card {
+      background:linear-gradient(180deg, rgba(24,34,71,.95), rgba(18,25,51,.95));
+      border:1px solid var(--line); border-radius:20px; overflow:hidden; display:flex; flex-direction:column;
+    }
+    .card img { width:100%; aspect-ratio:1/1; object-fit:cover; background:#0d1328; }
+    .card-body { padding:14px; display:flex; flex-direction:column; gap:8px; flex:1; }
+    .chip {
+      display:inline-block; padding:6px 10px; border-radius:999px; background:rgba(111,231,255,.1);
+      color:var(--primary); font-size:.8rem; font-weight:700;
+    }
+    .muted { color:var(--muted); }
+    .price { font-size:1.35rem; font-weight:900; margin-top:auto; }
+    .card-actions { display:flex; flex-direction:column; gap:10px; margin-top:10px; }
+    .two-col { display:grid; grid-template-columns:1.1fr .9fr; gap:16px; }
+    .cart-list { display:grid; gap:12px; }
+    .cart-item {
+      display:flex; gap:12px; align-items:center; background:rgba(255,255,255,.03);
+      border:1px solid var(--line); border-radius:16px; padding:10px;
+    }
+    .cart-item img { width:68px; height:68px; object-fit:cover; border-radius:12px; }
+    .cart-main { flex:1; min-width:0; }
+    .qty {
+      display:flex; align-items:center; gap:8px;
+    }
+    .qty button {
+      width:32px; height:32px; border-radius:10px; border:1px solid var(--line);
+      background:rgba(255,255,255,.04); color:var(--text); cursor:pointer;
+    }
+    .summary { display:grid; gap:10px; color:var(--muted); }
+    .summary div { display:flex; justify-content:space-between; gap:10px; }
+    .summary .total { color:var(--text); font-size:1.12rem; font-weight:900; }
+    .notice {
+      margin-top:14px; padding:12px 14px; border-radius:14px; background:rgba(111,231,255,.08);
+      border:1px solid rgba(111,231,255,.14); color:#d9f7ff; line-height:1.6;
+    }
+    footer { padding:28px 0 40px; color:var(--muted); }
+    .footer-inner {
+      border-top:1px solid var(--line); padding-top:18px; display:flex; justify-content:space-between;
+      gap:16px; flex-wrap:wrap;
+    }
+    @media (max-width:980px) {
+      .hero-box,.two-col { grid-template-columns:1fr; }
+      .catalog { grid-template-columns:repeat(3,1fr); }
+      .stats { grid-template-columns:repeat(2,1fr); }
+    }
+    @media (max-width:720px) {
+      .toolbar { grid-template-columns:1fr; }
+      .catalog { grid-template-columns:repeat(2,1fr); }
+    }
+    @media (max-width:520px) {
+      .catalog,.stats { grid-template-columns:1fr; }
+      .actions,.card-actions { flex-direction:column; }
+      .btn { width:100%; }
+    }
+  </style>
+</head>
+<body>
+  <nav class="nav">
+    <div class="container nav-inner">
+      <div class="brand">Zzet_a3D</div>
+      <div class="nav-links">
+        <a href="#catalogo">Catálogo</a>
+        <a href="#carrito">Carrito</a>
+        <a href="#pedido">Pedido</a>
+        <a href="#pagos">Pagos</a>
+      </div>
+      <a class="cart-pill" href="#carrito" id="cartCount">🛒 0</a>
+    </div>
+  </nav>
+
+  <header class="hero">
+    <div class="container">
+      <div class="hero-box">
+        <div>
+          <h1>Impresión 3D <span class="gradient">personalizada</span></h1>
+          <p class="lead">Versión liviana y estable, pero con carrito para ir agregando productos y enviarte el pedido por WhatsApp.</p>
+          <div class="actions">
+            <a class="btn primary" href="#catalogo">Ver catálogo</a>
+            <a class="btn" href="https://link.mercadopago.cl/zzeta3d" target="_blank" rel="noopener">Pagar online</a>
+          </div>
+        </div>
+        <div class="hero-card">
+          <h3 style="margin-top:0;">Datos rápidos</h3>
+          <div class="list">
+            <div><strong>Marca:</strong> Zzet_a3D</div>
+            <div><strong>WhatsApp:</strong> +56 9 8934 2434</div>
+            <div><strong>Mercado Pago:</strong> activo</div>
+            <div><strong>Productos:</strong> 79</div>
+          </div>
+        </div>
+      </div>
+      <div class="stats">
+        <div class="stat"><b>79</b><span>productos publicados</span></div>
+        <div class="stat"><b>🛒</b><span>carrito para sumar productos</span></div>
+        <div class="stat"><b>📲</b><span>pedido directo por WhatsApp</span></div>
+        <div class="stat"><b>💳</b><span>botón a Mercado Pago</span></div>
+      </div>
+    </div>
+  </header>
+
+  <section id="catalogo">
+    <div class="container">
+      <div class="section-head">
+        <h2>Catálogo</h2>
+        <p>Busca productos, filtra por categoría y agrégalos al carrito.</p>
+      </div>
+      <div class="toolbar">
+        <input id="searchInput" class="input" type="search" placeholder="Buscar producto..." />
+        <select id="categoryFilter" class="select"></select>
+        <select id="sortFilter" class="select">
+          <option value="featured">Ordenar: destacados</option>
+          <option value="price-asc">Precio: menor a mayor</option>
+          <option value="price-desc">Precio: mayor a menor</option>
+          <option value="name">Nombre A-Z</option>
+        </select>
+      </div>
+      <div id="catalogGrid" class="catalog"></div>
+    </div>
+  </section>
+
+  <section id="carrito">
+    <div class="container two-col">
+      <div class="panel">
+        <h2 style="margin-top:0;">Carrito</h2>
+        <div id="cartList" class="cart-list"></div>
+      </div>
+      <div class="panel">
+        <h2 style="margin-top:0;">Resumen</h2>
+        <div class="summary">
+          <div><span>Productos</span><strong id="summaryItems">0</strong></div>
+          <div><span>Subtotal</span><strong id="summarySubtotal">$0</strong></div>
+          <div class="total"><span>Total estimado</span><strong id="summaryTotal">$0</strong></div>
+        </div>
+        <div class="actions">
+          <button class="btn primary" id="clearCartBtn" type="button">Vaciar carrito</button>
+          <a class="btn" href="#pedido">Completar pedido</a>
+        </div>
+        <div class="notice">El carrito queda guardado en el navegador del cliente para que pueda seguir agregando productos.</div>
+      </div>
+    </div>
+  </section>
+
+  <section id="pedido">
+    <div class="container two-col">
+      <div class="panel">
+        <h2 style="margin-top:0;">Formulario de pedido</h2>
+        <p class="muted">Cuando el cliente complete esto, se abrirá WhatsApp con el resumen de todo el carrito.</p>
+        <form id="orderForm">
+          <input id="customerName" class="input" placeholder="Nombre completo" required />
+          <div style="height:12px;"></div>
+          <input id="customerPhone" class="input" placeholder="Teléfono / WhatsApp" required />
+          <div style="height:12px;"></div>
+          <input id="customerAddress" class="input" placeholder="Dirección o comuna" />
+          <div style="height:12px;"></div>
+          <textarea id="customerNotes" class="textarea" placeholder="Notas del pedido: color, tamaño, terminación, etc."></textarea>
+          <div class="actions">
+            <button class="btn primary" type="submit">Enviar pedido por WhatsApp</button>
+            <a class="btn" href="https://link.mercadopago.cl/zzeta3d" target="_blank" rel="noopener">Ir a Mercado Pago</a>
+          </div>
+        </form>
+      </div>
+      <div class="panel" id="pagos">
+        <h2 style="margin-top:0;">Pagos</h2>
+        <div class="list">
+          <div><strong>WhatsApp:</strong> +56 9 8934 2434</div>
+          <div><strong>Pago online:</strong> https://link.mercadopago.cl/zzeta3d</div>
+          <div><strong>Sitio:</strong> https://benjamadridbriones2310.github.io/Zzet_a3d/</div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <footer>
+    <div class="container footer-inner">
+      <div>© <span id="year"></span> Zzet_a3D</div>
+      <div>Impresión 3D personalizada</div>
+    </div>
+  </footer>
+
+  <script>
+    const SITE_URL = "https://benjamadridbriones2310.github.io/Zzet_a3d";
+    const PHONE = "56989342434";
+    const MP_LINK = "https://link.mercadopago.cl/zzeta3d";
+    const products = [{"id":"batman-bunny","name":"Figura estilo Batman Bunny","category":"Figuras Coleccionables","price":13990,"size":"12 a 14 cm","material":"PLA","description":"Figura temática estilo pop, ideal para vitrinas, regalos y coleccionistas.","image":"img/batman-bunny.webp"},{"id":"venom-bunnies","name":"Set Bunny estilo Venom","category":"Figuras Coleccionables","price":12990,"size":"12 a 14 cm","material":"PLA","description":"Modelos con acabado llamativo y colores vibrantes. También disponible por unidad.","image":"img/venom-bunnies.webp"},{"id":"pink-bunny","name":"Figura Bunny rosa","category":"Figuras Coleccionables","price":14990,"size":"12 a 14 cm","material":"PLA","description":"Figura decorativa tierna y elegante, perfecta para escritorio o regalo.","image":"img/pink-bunny.webp"},{"id":"red-bunny","name":"Figura Bunny roja","category":"Figuras Coleccionables","price":13990,"size":"12 a 14 cm","material":"PLA","description":"Modelo llamativo con excelente presencia visual para exhibición.","image":"img/red-bunny.webp"},{"id":"gundam-bunny","name":"Figura Bunny Gundam","category":"Anime y Geek","price":16990,"size":"14 a 16cm","material":"PLA","description":"Mezcla de estilo kawaii y mecha, ideal para fans del anime.","image":"img/gundam-bunny.webp"},{"id":"stitch-cups","name":"Vasos decorativos Stitch","category":"Decoración","price":7990,"size":"18 a 20 cm","material":"PLA","description":"Diseños coloridos y divertidos para decoración o regalo temático.","image":"img/stitch-cups.webp"},{"id":"minecraft-golem","name":"Golem Minecraft","category":"Minecraft","price":13990,"size":"13 a 16 cm","material":"PLA","description":"Figura inspirada en el universo Minecraft, ideal para gamers.","image":"img/minecraft-golem.webp"},{"id":"minecraft-hoe-frame","name":"Cuadro Azada Diamante Minecraft","category":"Minecraft","price":20990,"size":"20 a 25 cm","material":"PLA","description":"Cuadro 3D decorativo para muro o setup gamer.","image":"img/minecraft-hoe-frame.webp"},{"id":"minecraft-sword-frame","name":"Cuadro Espada Diamante Minecraft","category":"Minecraft","price":20990,"size":"20 a 25 cm","material":"PLA","description":"Pieza decorativa estilo pixel art con marco incluido.","image":"img/minecraft-sword-frame.webp"},{"id":"bulma-bike","name":"Bulma en vehículo clásico","category":"Anime y Geek","price":17990,"size":"18 a 24 cm","material":"Resina/PLA","description":"Escena detallada para coleccionistas. Disponible a pedido.","image":"img/bulma-bike.webp"},{"id":"kamesennin","name":"Maestro Roshi","category":"Dragon Ball","price":12990,"size":"14 a 16 cm","material":"Resina/PLA","description":"Figura coleccionable de alta presencia y muy buen nivel de detalle.","image":"img/kamesennin.webp"},{"id":"puar-ninja","name":"Puar Ninja","category":"Dragon Ball","price":17990,"size":"14 a 18 cm","material":"PLA","description":"Modelo compacto y original, ideal para fans de Dragon Ball.","image":"img/puar-ninja.webp"},{"id":"taopaipai","name":"Tao Pai Pai","category":"Dragon Ball","price":19990,"size":"18 a 22 cm","material":"Resina/PLA","description":"Figura temática con base incluida.","image":"img/taopaipai.webp"},{"id":"android16-bust","name":"Busto Androide 16","category":"Dragon Ball","price":24990,"size":"15 a 20 cm","material":"Resina/PLA","description":"Busto decorativo ideal para vitrinas y colecciones geek.","image":"img/android16-bust.webp"},{"id":"baba-lamp","name":"Baba lámpara LED","category":"Lámparas y Decoración","price":33990,"size":"18 a 24 cm","material":"PLA + luz LED","description":"Pieza decorativa iluminada con gran impacto visual.","image":"img/baba-lamp.webp"},{"id":"ozaru","name":"Ozaru","category":"Dragon Ball","price":24990,"size":"18 a 24 cm","material":"Resina/PLA","description":"Figura robusta de personaje clásico para fanáticos.","image":"img/ozaru.webp"},{"id":"beerus","name":"Beerus","category":"Dragon Ball","price":23990,"size":"20 a 25 cm","material":"Resina/PLA","description":"Modelo imponente con base personalizada.","image":"img/beerus.webp"},{"id":"cell","name":"Cell","category":"Dragon Ball","price":26990,"size":"22 a 28 cm","material":"Resina/PLA","description":"Figura de exhibición con alto nivel de detalle.","image":"img/cell.webp"},{"id":"broly-vs-goku","name":"Broly vs Goku","category":"Dragon Ball","price":34990,"size":"25 a 30 cm","material":"Resina/PLA","description":"Diorama de gran formato para coleccionistas exigentes.","image":"img/broly-vs-goku.webp"},{"id":"goku-ui","name":"Goku Ultra Instinct","category":"Dragon Ball","price":27990,"size":"20 a 28 cm","material":"Resina/PLA","description":"Figura icónica de alto impacto visual para fans de Dragon Ball Super.","image":"img/goku-ui.webp"},{"id":"goku-black-rose","name":"Goku Black Super Saiyan Rose","category":"Dragon Ball","price":27990,"size":"20 a 28 cm","material":"Resina/PLA","description":"Figura de exhibición con acabado premium y gran presencia visual.","image":"img/goku-black-rose.webp"},{"id":"trunks-shogun","name":"Trunks Shogun","category":"Dragon Ball","price":22990,"size":"22 a 30 cm","material":"Resina/PLA","description":"Diseño estilo samurái con armadura y espada, ideal para coleccionistas.","image":"img/trunks-shogun.webp"},{"id":"gogeta-shogun","name":"Gogeta Shogun","category":"Dragon Ball","price":32990,"size":"22 a 30 cm","material":"Resina/PLA","description":"Versión temática tipo guerrero samurái con doble espada.","image":"img/gogeta-shogun.webp"},{"id":"goku-vs-majin-vegeta","name":"Goku vs Majin Vegeta Diorama","category":"Dragon Ball","price":43990,"size":"28 a 38 cm","material":"Resina/PLA","description":"Diorama de batalla con base escénica y gran nivel de detalle.","image":"img/goku-vs-majin-vegeta.webp"},{"id":"gogeta-blue","name":"Gogeta Blue","category":"Dragon Ball","price":26990,"size":"20 a 28 cm","material":"Resina/PLA","description":"Figura icónica de Dragon Ball Super con acabado llamativo.","image":"img/gogeta-blue.webp"},{"id":"goku-ssj","name":"Goku Super Saiyan","category":"Dragon Ball","price":23990,"size":"20 a 28 cm","material":"Resina/PLA","description":"Modelo clásico de Goku en pose de poder.","image":"img/goku-ssj.webp"},{"id":"goku-ssj4","name":"Goku Super Saiyan 4","category":"Dragon Ball GT","price":24990,"size":"20 a 28 cm","material":"Resina/PLA","description":"Figura inspirada en Dragon Ball GT con acabado vibrante.","image":"img/goku-ssj4.webp"},{"id":"frieza","name":"Frieza","category":"Dragon Ball","price":27990,"size":"20 a 28 cm","material":"Resina/PLA","description":"Modelo detallado con múltiples vistas del personaje.","image":"img/frieza.webp"},{"id":"trunks-ssj","name":"Trunks Super Saiyan","category":"Dragon Ball","price":23990,"size":"20 a 28 cm","material":"Resina/PLA","description":"Figura dinámica con espada y pose de ataque.","image":"img/trunks-ssj.webp"},{"id":"grogu","name":"Grogu / Baby Yoda","category":"Star Wars","price":26990,"size":"18 a 24 cm","material":"Resina/PLA","description":"Figura adorable y detallada, perfecta para fans de Star Wars.","image":"img/grogu.webp"},{"id":"black-panther-mask","name":"Máscara Black Panther","category":"Máscaras y Cosplay","price":44990,"size":"Tamaño wearable","material":"PLA","description":"Máscara decorativa o cosplay con diseño elegante y detallado.","image":"img/black-panther-mask.webp"},{"id":"black-panther-helmet","name":"Casco Black Panther","category":"Máscaras y Cosplay","price":54990,"size":"Tamaño wearable","material":"PLA","description":"Casco completo estilo Black Panther para exhibición o cosplay.","image":"img/black-panther-helmet.webp"},{"id":"captain-america-helmet","name":"Casco Capitán América","category":"Máscaras y Cosplay","price":45990,"size":"Tamaño wearable","material":"PLA","description":"Casco de superhéroe con gran nivel de detalle.","image":"img/captain-america-helmet.webp"},{"id":"deadpool-mask","name":"Máscara Deadpool","category":"Máscaras y Cosplay","price":44990,"size":"Tamaño wearable","material":"PLA","description":"Máscara clásica de Deadpool, ideal para colección o disfraz.","image":"img/deadpool-mask.webp"},{"id":"ironman-mask","name":"Máscara Iron Man","category":"Máscaras y Cosplay","price":54990,"size":"Tamaño wearable","material":"PLA","description":"Máscara inspirada en Iron Man con diseño limpio y moderno.","image":"img/ironman-mask.webp"},{"id":"subzero-mask","name":"Máscara Sub-Zero","category":"Máscaras y Cosplay","price":28990,"size":"Tamaño wearable","material":"PLA","description":"Máscara temática de videojuego para fans y cosplayers.","image":"img/subzero-mask.webp"},{"id":"infinity-gauntlet","name":"Guantelete del Infinito","category":"Marvel y Geek","price":59990,"size":"Tamaño wearable","material":"PLA","description":"Guantelete coleccionable con gemas y gran impacto visual.","image":"img/infinity-gauntlet.webp"},{"id":"venom-mask","name":"Máscara Venom","category":"Máscaras y Cosplay","price":44990,"size":"Tamaño wearable","material":"PLA","description":"Máscara agresiva y llamativa para cosplay o decoración.","image":"img/venom-mask.webp"},{"id":"crash-bandicoot-pop","name":"Crash Bandicoot estilo Pop","category":"Videojuegos y Funko","price":13990,"size":"12 a 16 cm","material":"PLA","description":"Figura estilo coleccionable inspirada en Crash Bandicoot.","image":"img/crash-bandicoot-pop.webp"},{"id":"cristiano-ronaldo-pop","name":"Cristiano Ronaldo estilo Pop","category":"Deportes y Funko","price":14990,"size":"12 a 16 cm","material":"PLA","description":"Figura estilo pop inspirada en Cristiano Ronaldo.","image":"img/cristiano-ronaldo-pop.webp"},{"id":"nezuko-chibi","name":"Nezuko chibi","category":"Anime y Geek","price":14990,"size":"10 a 14 cm","material":"PLA","description":"Figura pequeña estilo chibi inspirada en anime.","image":"img/nezuko-chibi.webp"},{"id":"messi-pop","name":"Messi estilo Pop","category":"Deportes y Funko","price":14990,"size":"10 a 14 cm","material":"PLA","description":"Figura estilo pop inspirada en Messi.","image":"img/messi-pop.webp"},{"id":"spiderman","name":"spiderman","category":"funko","price":13990,"size":"10 a 14 cm","material":"PLA","description":"Figura Super heroe ideal para colección o regalo.","image":"img/abra.webp"},{"id":"Abra","name":"Abra","category":"Pokémon","price":7990,"size":"10 a 13 cm","material":"PLA","description":"Diseño decorativo especial con acabado ornamental.","image":"img/pikachu-ornamental.webp"},{"id":"togepi full","name":"Togepi full","category":"Pokémon","price":15990,"size":"8 a 12 cm","material":"PLA","description":"Figura compacta de Togepi para colección.","image":"img/togepi.webp"},{"id":"Togepi","name":"Togepi","category":"Pokémon","price":11990,"size":"10 a 13 cm","material":"PLA","description":"Modelo articulado o decorativo estilo low poly.","image":"img/onix-lowpoly.webp"},{"id":"Onix","name":"Onix","category":"Pokémon","price":14990,"size":"16 a 22 cm","material":"PLA","description":"Figura Pokémon con pose de combate.","image":"img/blastoise.webp"},{"id":"blastoise","name":"Blastoise","category":"Pokémon","price":16990,"size":"12 a 16 cm","material":"PLA","description":"Figura clásica de Blaistoise con base.","image":"img/bulbasaur.webp"},{"id":"Bulbasaur","name":"Bulbasaur","category":"Pokémon","price":9990,"size":"6 a 10 cm","material":"PLA","description":"Figura inspirado en Bulbasaur.","image":"img/charmander-keychain.webp"},{"id":"charmander articulado","name":"Charmander articulado","category":"Pokémon","price":5990,"size":"10 a 12 cm","material":"PLA","description":"Llavero articulado Charmander.","image":"img/charmander-horror.webp"},{"id":"Charmander Horror","name":"Charmander Horror","category":"Pokémon","price":13990,"size":"10 a 14 cm","material":"PLA","description":"Figura Pokémon modificada de charmander.","image":"img/chikorita.webp"},{"id":"Chicorita","name":"Chicorita","category":"Pokémon","price":14990,"size":"16 a 22 cm","material":"PLA","description":"Figura de Chicorita adorable para vitrina.","image":"img/cinderace.webp"},{"id":"Cinderance","name":"Cinderance","category":"Pokémon","price":12990,"size":"Varios tamaños","material":"PLA","description":"Cinderance perosnaje de fuego llamativo para coleccion.","image":"img/pokemon-pack.webp"},{"id":"ornamental-pokeball","name":"Pokébola ornamental","category":"Pokémon","price":15990,"size":"12 a 15 cm","material":"PLA","description":"Pokébola decorativa con acabado ornamental y gran nivel de detalle.","image":"img/ornamental-pokeball.webp"},{"id":"magnemite","name":"Magnemite","category":"Pokémon","price":38990,"size":"16 a 22 cm","material":"PLA","description":"Figura de Magnemite ideal para colección o decoración geek.","image":"img/magnemite.webp"},{"id":"eevee","name":"Eevee","category":"Pokémon","price":14990,"size":"10 a 14 cm","material":"PLA","description":"Figura adorable de Eevee en pose sentada.","image":"img/eevee.webp"},{"id":"cubone","name":"Cubone","category":"Pokémon","price":13990,"size":"10 a 14 cm","material":"PLA","description":"Figura clásica de Cubone con hueso incluido.","image":"img/cubone.webp"},{"id":"gyarados","name":"Gyarados","category":"Pokémon","price":13990,"size":"10 a 14 cm","material":"PLA","description":"Figura dinámica de Gyarados con varias vistas.","image":"img/gyarados.webp"},{"id":"jigglypuff","name":"Jigglypuff","category":"Pokémon","price":13990,"size":"10 a 14 cm","material":"PLA","description":"Figura tierna de Jigglypuff para vitrina o escritorio.","image":"img/jigglypuff.webp"},{"id":"charizard","name":"Charizard","category":"Pokémon","price":20990,"size":"18 a 26 cm","material":"PLA","description":"Figura de Charizard con llamas azules estilo especial.","image":"img/charizard.webp"},{"id":"mew","name":"Mew","category":"Pokémon","price":13990,"size":"10 a 14 cm","material":"PLA","description":"Figura de Mew en pose clásica con diseño limpio.","image":"img/mew.webp"},{"id":"mewtwo-diorama","name":"Mewtwo diorama","category":"Pokémon","price":24990,"size":"20 a 28 cm","material":"PLA","description":"Diorama de Mewtwo con base y efecto de energía.","image":"img/mewtwo-diorama.webp"},{"id":"giratina","name":"Giratina","category":"Pokémon","price":28990,"size":"22 a 30 cm","material":"PLA","description":"Figura de Giratina con base y detalles de humo.","image":"img/giratina.webp"},{"id":"entei","name":"Entei","category":"Pokémon","price":13990,"size":"10 a 14 cm","material":"PLA","description":"Figura legendaria de Entei con gran presencia visual.","image":"img/entei.webp"},{"id":"pikachu-charizard-hoodie","name":"Pikachu con capucha de Charizard","category":"Pokémon","price":14990,"size":"12 a 14 cm","material":"PLA","description":"Figura estilo chibi de Pikachu con traje de Charizard.","image":"img/pikachu-charizard-hoodie.webp"},{"id":"piplup","name":"Piplup","category":"Pokémon","price":13990,"size":"10 a 14 cm","material":"PLA","description":"Figura pequeña de Piplup ideal para colección.","image":"img/piplup.webp"},{"id":"lucario","name":"Lucario","category":"Pokémon","price":13990,"size":"12 a 14 cm","material":"PLA","description":"Figura de Lucario en pose de combate.","image":"img/lucario.webp"},{"id":"zacian","name":"Zacian","category":"Pokémon","price":24990,"size":"18 a 26 cm","material":"PLA","description":"Figura de Zacian pintada con base decorativa.","image":"img/zacian.webp"},{"id":"extra_0","name":"Groudon","category":"Pokémon","price":24990,"size":"variable","material":"PLA","description":"Figura 3D de Groudon","image":"img/extra_0.webp"},{"id":"extra_1","name":"Pokébola Groudon","category":"Pokémon","price":12990,"size":"variable","material":"PLA","description":"Figura 3D de Pokébola Groudon","image":"img/extra_1.webp"},{"id":"extra_2","name":"Kyogre","category":"Pokémon","price":12990,"size":"variable","material":"PLA","description":"Figura 3D de Kyogre","image":"img/extra_2.webp"},{"id":"extra_3","name":"Lugia","category":"Pokémon","price":15990,"size":"variable","material":"PLA","description":"Figura 3D de Lugia","image":"img/extra_3.webp"},{"id":"extra_4","name":"Reshiram & Zekrom base","category":"Pokémon","price":19990,"size":"variable","material":"PLA","description":"Figura 3D de Reshiram & Zekrom base","image":"img/extra_4.webp"},{"id":"extra_5","name":"Dratini tejido","category":"Pokémon","price":13990,"size":"variable","material":"PLA","description":"Figura 3D de Dratini tejido","image":"img/extra_5.webp"},{"id":"extra_6","name":"playmat texturizados","category":"Pokémon","price":7990,"size":"variable","material":"PLA","description":"playmat texturizados lleva tu juego tcg a otro nivel ","image":"img/extra_6.webp"},{"id":"extra_7","name":"Mewtwo articulado","category":"Pokémon","price":21990,"size":"variable","material":"PLA","description":"Figura 3D de Mewtwo articulado","image":"img/extra_7.webp"},{"id":"extra_8","name":"Kyogre brillante","category":"Pokémon","price":17990,"size":"variable","material":"PLA","description":"Figura 3D de Kyogre brillante","image":"img/extra_8.webp"},{"id":"extra_9","name":"Eevee Pokeball","category":"Pokémon","price":12990,"size":"variable","material":"PLA","description":"Figura 3D de Eevee Pokeball","image":"img/extra_9.webp"},{"id":"extra_10","name":"Gengar Pokeball","category":"Pokémon","price":13990,"size":"variable","material":"PLA","description":"Figura 3D de Gengar Pokeball","image":"img/extra_10.webp"}];
+    const currency = new Intl.NumberFormat("es-CL", { style: "currency", currency: "CLP", maximumFractionDigits: 0 });
+    const state = { cart: [] };
+
+    const byId = (id) => document.getElementById(id);
+    const formatPrice = (v) => currency.format(v);
+
+    function productLink(product) {
+      return `${SITE_URL}/#producto-${product.id}`;
+    }
+
+    function saveCart() {
+      localStorage.setItem("zzet_a3d_cart", JSON.stringify(state.cart));
+    }
+
+    function loadCart() {
+      try {
+        state.cart = JSON.parse(localStorage.getItem("zzet_a3d_cart")) || [];
+      } catch {
+        state.cart = [];
+      }
+    }
+
+    function updateCartCount() {
+      const count = state.cart.reduce((sum, item) => sum + item.qty, 0);
+      byId("cartCount").textContent = `🛒 ${count}`;
+      byId("summaryItems").textContent = count;
+      const subtotal = state.cart.reduce((sum, item) => sum + item.price * item.qty, 0);
+      byId("summarySubtotal").textContent = formatPrice(subtotal);
+      byId("summaryTotal").textContent = formatPrice(subtotal);
+    }
+
+    function addToCart(productId) {
+      const product = products.find(p => p.id === productId);
+      if (!product) return;
+      const existing = state.cart.find(item => item.id === productId);
+      if (existing) existing.qty += 1;
+      else state.cart.push({ ...product, qty: 1 });
+      saveCart();
+      renderCart();
+      updateCartCount();
+      alert(`"${product.name}" fue agregado al carrito.`);
+    }
+
+    function changeQty(productId, delta) {
+      const item = state.cart.find(i => i.id === productId);
+      if (!item) return;
+      item.qty += delta;
+      if (item.qty <= 0) {
+        state.cart = state.cart.filter(i => i.id !== productId);
+      }
+      saveCart();
+      renderCart();
+      updateCartCount();
+    }
+
+    function clearCart() {
+      state.cart = [];
+      saveCart();
+      renderCart();
+      updateCartCount();
+    }
+
+    function renderCategories() {
+      const cats = ["Todas", ...new Set(products.map(p => p.category))];
+      byId("categoryFilter").innerHTML = cats.map(c => `<option value="${c}">${c}</option>`).join("");
+    }
+
+    function renderCatalog() {
+      const term = byId("searchInput").value.trim().toLowerCase();
+      const category = byId("categoryFilter").value;
+      const sort = byId("sortFilter").value;
+
+      let filtered = products.filter(p => {
+        const text = [p.name, p.category, p.description, p.material, p.size].join(" ").toLowerCase();
+        return text.includes(term) && (category === "Todas" || p.category === category);
+      });
+
+      if (sort === "price-asc") filtered.sort((a,b) => a.price - b.price);
+      if (sort === "price-desc") filtered.sort((a,b) => b.price - a.price);
+      if (sort === "name") filtered.sort((a,b) => a.name.localeCompare(b.name, "es"));
+
+      const grid = byId("catalogGrid");
+      if (!filtered.length) {
+        grid.innerHTML = `<div class="panel">No se encontraron productos.</div>`;
+        return;
+      }
+
+      grid.innerHTML = filtered.map(p => `
+        <article class="card" id="producto-${p.id}">
+          <img src="${p.image}" alt="${p.name}">
+          <div class="card-body">
+            <span class="chip">${p.category}</span>
+            <h3 style="margin:0;">${p.name}</h3>
+            <div class="muted">${p.description}</div>
+            <div class="muted" style="font-size:.9rem;">${p.size} · ${p.material}</div>
+            <div class="price">${formatPrice(p.price)}</div>
+            <div class="card-actions">
+              <button class="btn primary" onclick="addToCart('${p.id}')">Agregar al carrito</button>
+              <a class="btn" href="https://wa.me/${PHONE}?text=${encodeURIComponent(`Hola Zzet_a3D, quiero pedir:\n\nProducto: ${p.name}\nPrecio: ${formatPrice(p.price)}\nEnlace: ${productLink(p)}`)}" target="_blank" rel="noopener">Pedir por WhatsApp</a>
+            </div>
+          </div>
+        </article>
+      `).join("");
+    }
+
+    function renderCart() {
+      const el = byId("cartList");
+      if (!state.cart.length) {
+        el.innerHTML = `<div class="panel">Tu carrito está vacío.</div>`;
+        return;
+      }
+      el.innerHTML = state.cart.map(item => `
+        <article class="cart-item">
+          <img src="${item.image}" alt="${item.name}">
+          <div class="cart-main">
+            <strong>${item.name}</strong>
+            <div class="muted">${formatPrice(item.price)} c/u</div>
+            <div class="muted" style="font-size:.9rem;">${item.category}</div>
+          </div>
+          <div class="qty">
+            <button onclick="changeQty('${item.id}', -1)">−</button>
+            <strong>${item.qty}</strong>
+            <button onclick="changeQty('${item.id}', 1)">+</button>
+          </div>
+        </article>
+      `).join("");
+    }
+
+    function buildOrderMessage() {
+      const name = byId("customerName").value.trim();
+      const phone = byId("customerPhone").value.trim();
+      const address = byId("customerAddress").value.trim();
+      const notes = byId("customerNotes").value.trim();
+
+      const lines = [];
+      lines.push("Hola Zzet_a3D, quiero realizar este pedido:");
+      lines.push("");
+      lines.push("DATOS DEL CLIENTE");
+      lines.push(`Nombre: ${name || "-"}`);
+      lines.push(`Teléfono: ${phone || "-"}`);
+      lines.push(`Dirección / comuna: ${address || "-"}`);
+      lines.push("");
+      lines.push("PRODUCTOS");
+      state.cart.forEach((item, index) => {
+        lines.push(`${index+1}. ${item.name}`);
+        lines.push(`   - Cantidad: ${item.qty}`);
+        lines.push(`   - Precio unitario: ${formatPrice(item.price)}`);
+        lines.push(`   - Subtotal: ${formatPrice(item.price * item.qty)}`);
+        lines.push(`   - Enlace: ${productLink(item)}`);
+      });
+      lines.push("");
+      lines.push(`TOTAL ESTIMADO: ${formatPrice(state.cart.reduce((s,i)=>s+i.price*i.qty,0))}`);
+      lines.push(`PAGO ONLINE: ${MP_LINK}`);
+      if (notes) {
+        lines.push("");
+        lines.push("NOTAS");
+        lines.push(notes);
+      }
+      return lines.join("\n");
+    }
+
+    byId("searchInput").addEventListener("input", renderCatalog);
+    byId("categoryFilter").addEventListener("change", renderCatalog);
+    byId("sortFilter").addEventListener("change", renderCatalog);
+    byId("clearCartBtn").addEventListener("click", clearCart);
+
+    byId("orderForm").addEventListener("submit", (e) => {
+      e.preventDefault();
+      if (!state.cart.length) {
+        alert("Primero agrega al menos un producto al carrito.");
+        return;
+      }
+      const url = `https://wa.me/${PHONE}?text=${encodeURIComponent(buildOrderMessage())}`;
+      window.open(url, "_blank");
+    });
+
+    byId("year").textContent = new Date().getFullYear();
+
+    loadCart();
+    renderCategories();
+    renderCatalog();
+    renderCart();
+    updateCartCount();
+
+    window.addToCart = addToCart;
+    window.changeQty = changeQty;
+  </script>
+</body>
+</html>
